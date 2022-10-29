@@ -18,12 +18,6 @@ def update_photo_log_file(photo_file_name):
     with open(LOG_FILE_NAME, "a") as f:
         f.write(photo_file_name)
         f.write("\n")
-
-#def send_email_with_photo(yagmail_client, file_name):
-#    yagmail_client.send(to="raspi.notification.tk@gmail.com",
-#                        subject="Movement detected!",
-#                        contents="Photo attached",
-#                        attachments=file_name)
                         
 # setup a camera
 camera = PiCamera()
@@ -37,13 +31,6 @@ print("Camera setup done")
 if os.path.exists(LOG_FILE_NAME):
     os.remove(LOG_FILE_NAME)
     print("Log file removed")
-    
-# setup yagmail
-#password = ""
-#with open("/home/pi/.local/share/.email_pw", "r") as f:
-#    password = f.read()
-#yag = yagmail.SMTP("raspi.notification.tk@gmail.com", password)
-#print("Email sender setup done")
     
 # setup GPIOs for sensor and led
 GPIO.setmode(GPIO.BCM)
@@ -76,7 +63,7 @@ try:
                     print("Take a photo and send it by email")
                     photo_file_name = take_photo(camera)
                     update_photo_log_file(photo_file_name)
-                    send_gmail.mainProcess()
+                    send_gmail.mainProcess(photo_file_name)
                     print("Email sent")
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state

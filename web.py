@@ -1,16 +1,16 @@
-from flask import Flask
+from flask import Flask, render_template
 import os
 
-CAMERA_FOLDER_PATH = "/home/pi/Camera"
-LOG_FILE_NAME = CAMERA_FOLDER_PATH + "/photo_logs.txt"
+FOLDER_PATH = "/home/pi/Python/Project_2/static"
+LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
 
-app = Flask(__name__, static_url_path=CAMERA_FOLDER_PATH, static_folder=CAMERA_FOLDER_PATH)
+app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
 
 @app.route("/")
 def index ():
-    return "Hello"
-
+    return render_template("index.html")
+    
 @app.route("/check-movement")
 def check_movement():
     message = ""

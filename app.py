@@ -7,10 +7,10 @@ import send_gmail
 
 PIR_PIN = 4
 LED_PIN = 17
-LOG_FILE_NAME = "/home/pi/Camera/photo_logs.txt"
+LOG_FILE_NAME = "/home/pi/Python/Project_2/static/photo/photo_logs.txt"
 
 def take_photo(camera):
-    file_name = "/home/pi/Camera/img_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".jpg"
+    file_name = "/home/pi/Python/Project_2/static/photo/img_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".jpg"
     camera.capture(file_name)
     return file_name
 

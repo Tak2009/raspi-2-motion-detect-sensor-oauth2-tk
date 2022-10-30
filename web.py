@@ -31,4 +31,8 @@ def check_movement():
         message = "Nothing new"
     return message
 
+@app.route("/check-time-stamp")
+def time_stamp ():
+    return render_template("check-time-stamp.html")
+
 app.run(host="0.0.0.0")

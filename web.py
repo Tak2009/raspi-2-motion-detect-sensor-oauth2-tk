@@ -5,13 +5,13 @@ FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
 
-app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
+web_app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
 
-@app.route("/")
+@web_app.route("/")
 def index ():
     return render_template("index.html")
     
-@app.route("/check-movement")
+@web_app.route("/check-movement")
 def check_movement():
     message = ""
     line_counter = 0
@@ -31,8 +31,12 @@ def check_movement():
         message = "Nothing new"
     return message
 
-@app.route("/check-time-stamp")
+@web_app.route("/check-time-stamp")
 def time_stamp ():
     return render_template("check-time-stamp.html")
 
-app.run(host="0.0.0.0")
+@web_app.route("/manual-photo")
+def take_photo_manually ():
+    return "work in progress"
+
+web_app.run(host="0.0.0.0")

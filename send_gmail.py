@@ -60,7 +60,7 @@ def getAccessToken(_scopes, _token, _credentialJson):
    _service = build('gmail', 'v1', credentials=creds)
    return _service
 
-def mainProcess(photo_file_name):
+def gmailSender(photo_file_name):
    json = getSettings("settings.json")
    service = getAccessToken(json["scopes"], json["gglToken"], json["gglJson"])
    message = attachFileToEmail(photo_file_name)

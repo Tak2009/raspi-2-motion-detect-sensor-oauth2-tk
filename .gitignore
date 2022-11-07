@@ -133,3 +133,4 @@ __pycache__/
 credentials.json
 token.pickle
 settings.json
+static/photo/*

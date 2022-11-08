@@ -1,2 +1,0 @@
-/home/pi/Python/Project_2/static/photo/img_2022-11-07_15-28-37.jpg
-/home/pi/Python/Project_2/static/photo/img_2022-11-07_15-28-51.jpg

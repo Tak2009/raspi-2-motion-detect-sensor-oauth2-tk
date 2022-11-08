@@ -1,5 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 import os
+import config as Conf
 
 FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
@@ -9,7 +10,8 @@ web_app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH
 
 @web_app.route("/")
 def index ():
-    return render_template("index.html")
+    mode = Conf.auto_flag
+    return render_template("index.html", mode=mode)
     
 @web_app.route("/check-movement")
 def check_movement():
@@ -35,8 +37,18 @@ def check_movement():
 def time_stamp ():
     return render_template("check-time-stamp.html")
 
-@web_app.route("/manual-photo")
-def take_photo_manually ():
-    return "work in progress"
+@web_app.route("/auto-mode/<on_off_flag>")
+def auto_on_off(on_off_flag):
+    Conf.auto_switch(on_off_flag)
+    Conf.take_photo_automatically()
+    print('Check: ' + Conf.auto_flag)
+    return redirect('http://0.0.0.0:5000')
+
+@web_app.route("/take-photo-now")
+def take_photo_manually():
+    message = Conf.take_photo_now()
+    return render_template("take-photo-now.html", message=message)
 
 web_app.run(host="0.0.0.0")
+
+

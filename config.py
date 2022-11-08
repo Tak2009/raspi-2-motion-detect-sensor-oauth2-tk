@@ -3,6 +3,7 @@ import time
 import datetime
 from picamera import PiCamera
 import os
+import send_gmail as Gmail
 
 PIR_PIN = 4
 LED_PIN = 17
@@ -17,7 +18,71 @@ def update_photo_log_file(photo_file_name):
     with open(LOG_FILE_NAME, "a") as f:
         f.write(photo_file_name)
         f.write("\n")
-                        
+
+def take_photo_now():
+    global last_pir_state
+    global last_time_photo_taken
+    pir_state = GPIO.input(PIR_PIN)
+    print("Take a photo now")
+    photo_file_name = take_photo(camera)
+    update_photo_log_file(photo_file_name)
+    print("Photo taken. Check http://0.0.0.0:5000/check-movement")
+    last_time_photo_taken = time.time()
+    last_pir_state = pir_state
+    message = "http://0.0.0.0:5000/check-movement"
+    return message
+        
+def auto_switch(on_off_flag):
+    global auto_flag
+    if on_off_flag == "off":
+        if auto_flag == "on":
+            auto_flag = "off"
+            return "Auto turned off now"
+        else:
+            return "Auto off already"
+    if on_off_flag == "on":
+        if auto_flag == "off":
+            auto_flag = "on"
+            return "Auto turned on now"
+        else:
+            return "Auto on already"
+    return "Please set \"on\" or \"off\""
+
+def take_photo_automatically():
+    global auto_flag
+    try:
+               
+        global last_pir_state
+        global movement_timer
+        global last_time_photo_taken
+        while auto_flag == "on":
+            time.sleep(0.01)
+            pir_state = GPIO.input(PIR_PIN)
+            if pir_state == GPIO.HIGH:
+                GPIO.output(LED_PIN, GPIO.HIGH)
+            else:
+                GPIO.output(LED_PIN, GPIO.LOW)
+            if last_pir_state == GPIO.LOW and pir_state == GPIO.HIGH:
+                movement_timer = time.time()
+            if last_pir_state == GPIO.HIGH and pir_state == GPIO.HIGH:
+                if time.time() - movement_timer > MOVE_DETECT_TRESHOLD:
+                    if time.time() - last_time_photo_taken > MIN_DURATION_BETWEEN_2_PHOTOS:
+                        print("Take a photo and send it by email")
+                        photo_file_name = take_photo(camera)
+                        update_photo_log_file(photo_file_name)
+                        Gmail.gmailSender(photo_file_name)
+                        print("Photo taken and email sent out")
+                        last_time_photo_taken = time.time()
+            last_pir_state = pir_state
+            if auto_flag == "off":
+                break
+        print("turned off")
+#        GPIO.cleanup()
+    except KeyboardInterrupt:
+        auto_flag = "off"
+        GPIO.cleanup()
+        print(" : interrupt by Ctr + C")
+                            
 # setup a camera
 camera = PiCamera()
 camera.resolution = (720, 480)
@@ -39,10 +104,15 @@ GPIO.output(LED_PIN, GPIO.LOW)
 print("GPIOs set-up")
 
 MOVE_DETECT_TRESHOLD = 3.0
-pir_state = GPIO.input(PIR_PIN)
+#pir_state = GPIO.input(PIR_PIN)
 last_pir_state = GPIO.input(PIR_PIN)
 movement_timer = time.time()
 MIN_DURATION_BETWEEN_2_PHOTOS = 10.0
 last_time_photo_taken = 0
 
+auto_flag = "off"
+
 print("Everything has been setup")
+
+
+

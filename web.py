@@ -1,6 +1,12 @@
+# https://flask.palletsprojects.com/en/2.2.x/async-await/
+# https://flask.palletsprojects.com/en/2.0.x/changes/#version-2-0-2
+# https://testdriven.io/blog/flask-async/
+# get Flask2.0 or above = $pip install -U Flask
+# then $pip install flask[async]
 from flask import Flask, render_template, redirect
 import os
 import config as Conf
+import asyncio
 
 FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
@@ -40,9 +46,30 @@ def time_stamp ():
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):
     Conf.auto_switch(on_off_flag)
-    Conf.take_photo_automatically()
-    print('Check: ' + Conf.auto_flag)
+    if Conf.auto_flag == "on":
+        Conf.take_photo_automatically()
+        print('Check: ' + Conf.auto_flag)
+    if Conf.auto_flag == "off":
+        print('Check: ' + Conf.auto_flag)
     return redirect('http://0.0.0.0:5000')
+
+# @web_app.route("/auto-mode/<on_off_flag>")
+# async def auto_on_off(on_off_flag):
+#     Conf.auto_switch(on_off_flag)
+#     print('Check1: ' + Conf.auto_flag)
+#     if Conf.auto_flag == "off":
+#         print('Check2: ' + Conf.auto_flag)
+#         return redirect('http://0.0.0.0:5000')
+#     if Conf.auto_flag == "on":
+#         task_1 = asyncio.create_task(Conf.async_take_photo_automatically())
+#         task_1 = asyncio.create_task(Conf.async_test_1())
+#         task_2 = asyncio.create_task(Conf.async_test_2())
+#         task_3 = asyncio.create_task(Conf.async_test_3())
+#         await task_1
+#         await task_2
+#         await task_3
+#         print('Check3: ' + Conf.auto_flag)
+#         return redirect('http://0.0.0.0:5000')
 
 @web_app.route("/take-photo-now")
 def take_photo_manually():

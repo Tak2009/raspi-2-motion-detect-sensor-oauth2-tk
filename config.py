@@ -4,6 +4,9 @@ import datetime
 from picamera import PiCamera
 import os
 import send_gmail as Gmail
+# import asyncio
+
+#GPIO.cleanup()
 
 PIR_PIN = 4
 LED_PIN = 17
@@ -22,6 +25,7 @@ def update_photo_log_file(photo_file_name):
 def take_photo_now():
     global last_pir_state
     global last_time_photo_taken
+    global pir_state
     pir_state = GPIO.input(PIR_PIN)
     print("Take a photo now")
     photo_file_name = take_photo(camera)
@@ -50,39 +54,57 @@ def auto_switch(on_off_flag):
 
 def take_photo_automatically():
     global auto_flag
-    try:
-               
-        global last_pir_state
-        global movement_timer
-        global last_time_photo_taken
-        while auto_flag == "on":
-            time.sleep(0.01)
-            pir_state = GPIO.input(PIR_PIN)
-            if pir_state == GPIO.HIGH:
-                GPIO.output(LED_PIN, GPIO.HIGH)
-            else:
-                GPIO.output(LED_PIN, GPIO.LOW)
-            if last_pir_state == GPIO.LOW and pir_state == GPIO.HIGH:
-                movement_timer = time.time()
-            if last_pir_state == GPIO.HIGH and pir_state == GPIO.HIGH:
-                if time.time() - movement_timer > MOVE_DETECT_TRESHOLD:
-                    if time.time() - last_time_photo_taken > MIN_DURATION_BETWEEN_2_PHOTOS:
-                        print("Take a photo and send it by email")
-                        photo_file_name = take_photo(camera)
-                        update_photo_log_file(photo_file_name)
-                        Gmail.gmailSender(photo_file_name)
-                        print("Photo taken and email sent out")
-                        last_time_photo_taken = time.time()
-            last_pir_state = pir_state
-            if auto_flag == "off":
-                break
-        print("turned off")
-#        GPIO.cleanup()
-    except KeyboardInterrupt:
-        auto_flag = "off"
-        GPIO.cleanup()
-        print(" : interrupt by Ctr + C")
-                            
+    global last_pir_state
+    global movement_timer
+    global last_time_photo_taken
+    global pir_state
+    while auto_flag == "on":
+        time.sleep(0.01)
+        pir_state = GPIO.input(PIR_PIN)
+        if pir_state == GPIO.HIGH:
+            GPIO.output(LED_PIN, GPIO.HIGH)
+        else:
+            GPIO.output(LED_PIN, GPIO.LOW)
+        if last_pir_state == GPIO.LOW and pir_state == GPIO.HIGH:
+            movement_timer = time.time()
+        if last_pir_state == GPIO.HIGH and pir_state == GPIO.HIGH:
+            if time.time() - movement_timer > MOVE_DETECT_TRESHOLD:
+                if time.time() - last_time_photo_taken > MIN_DURATION_BETWEEN_2_PHOTOS:
+                    print("Take a photo and send it by email")
+                    photo_file_name = take_photo(camera)
+                    update_photo_log_file(photo_file_name)
+                    Gmail.gmailSender(photo_file_name)
+                    print("Photo taken and email sent out")
+                    last_time_photo_taken = time.time()
+        last_pir_state = pir_state
+        if auto_flag == "off":
+            break
+    print("turned off")
+#    GPIO.cleanup()
+
+# async def async_take_photo_automatically():
+#     print("start async_take_photo_automatically")
+#     print("after 5 sec")
+#     await asyncio.sleep(60)
+# 
+#     take_photo_automatically()
+#     print("end async_take_photo_automatically")
+# 
+# async def async_test_1():
+#     print("start async_test_1")
+#     await asyncio.sleep(1)
+#     print("end async_test_1")
+# 
+# async def async_test_2():
+#     print("start async_test_2")
+#     await asyncio.sleep(2)
+#     print("end async_test_2")
+#     
+# async def async_test_3():
+#     print("start async_test_3")
+#     await asyncio.sleep(3)
+#     print("end async_test_3")
+                             
 # setup a camera
 camera = PiCamera()
 camera.resolution = (720, 480)
@@ -104,7 +126,7 @@ GPIO.output(LED_PIN, GPIO.LOW)
 print("GPIOs set-up")
 
 MOVE_DETECT_TRESHOLD = 3.0
-#pir_state = GPIO.input(PIR_PIN)
+pir_state = GPIO.input(PIR_PIN)
 last_pir_state = GPIO.input(PIR_PIN)
 movement_timer = time.time()
 MIN_DURATION_BETWEEN_2_PHOTOS = 10.0

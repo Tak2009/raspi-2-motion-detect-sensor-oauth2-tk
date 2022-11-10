@@ -1,16 +1,21 @@
-# https://flask.palletsprojects.com/en/2.2.x/async-await/
-# https://flask.palletsprojects.com/en/2.0.x/changes/#version-2-0-2
-# https://testdriven.io/blog/flask-async/
-# get Flask2.0 or above = $pip install -U Flask
-# then $pip install flask[async]
 from flask import Flask, render_template, redirect
 import os
 import config as Conf
-import asyncio
+# https://apscheduler.readthedocs.io/en/latest/
+# https://www.pytry3g.com/entry/apscheduler#%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%EF%BC%91%EF%BC%93%EF%BC%91%EF%BC%99%E6%99%82%EF%BC%94%EF%BC%90%E5%88%86%E3%81%AB%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9F%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0%E3%81%AE%E8%87%AA%E5%8B%95%E5%AE%9F%E8%A1%8C
+# https://apscheduler.readthedocs.io/en/3.x/modules/triggers/date.html
+from apscheduler.schedulers.background import BackgroundScheduler
+import datetime
 
 FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
+
+# instanciate a sheduler
+sched = ""
+
+def test():
+    print('testing the scheduler. this was set 1 min ago!: ' + str(datetime.datetime.now().hour) + '-' + str(datetime.datetime.now().minute))
 
 web_app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
 
@@ -45,31 +50,35 @@ def time_stamp ():
 
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):
+    global sched
+    print(type(sched))
     Conf.auto_switch(on_off_flag)
-    if Conf.auto_flag == "on":
-        Conf.take_photo_automatically()
-        print('Check: ' + Conf.auto_flag)
-    if Conf.auto_flag == "off":
-        print('Check: ' + Conf.auto_flag)
+    if on_off_flag == "on":
+        if isinstance(sched, str):
+            print('CheckOn1: ' + on_off_flag)
+            print('CheckOn2: ' + str(type(sched)))
+            sched = BackgroundScheduler()
+            date = datetime.datetime.now()
+            sched.add_job(Conf.take_photo_automatically, 'date', run_date=datetime.datetime(date.year, date.month, date.day, date.hour, date.minute + 1, date.second), id='auto')
+            sched.start()
+            print('BackgroundScheduler set up and a job has been scheduled. The job, \'auto\' will start running in 1 min: ' + str(date.hour) + '-' + str(date.minute) )
+            print('CheckOn3: '+ str(sched.get_jobs()))
+            print('CheckOn4: ' + str(type(sched)))
+        else:
+            print('BackgroundScheduler exists and \'auto\' job is running in the backgroundand: the auto-mode is already on')
+    if on_off_flag == "off":
+        if not isinstance(sched, str):
+            print('CheckOff1: ' + on_off_flag)
+            print('CheckOff2: ' + str(type(sched)))
+            sched.shutdown(wait=False)
+            print('BackgroundScheduler shut down')
+            print('Auto job is now off')
+            sched = ""
+            print('CheckOff3: ' + str(type(sched)))
+        else:
+            print('No BackgroundScheduler exists and the auto-mode is already off')
+            print('CheckOff4: '+ str(type(sched)))
     return redirect('http://0.0.0.0:5000')
-
-# @web_app.route("/auto-mode/<on_off_flag>")
-# async def auto_on_off(on_off_flag):
-#     Conf.auto_switch(on_off_flag)
-#     print('Check1: ' + Conf.auto_flag)
-#     if Conf.auto_flag == "off":
-#         print('Check2: ' + Conf.auto_flag)
-#         return redirect('http://0.0.0.0:5000')
-#     if Conf.auto_flag == "on":
-#         task_1 = asyncio.create_task(Conf.async_take_photo_automatically())
-#         task_1 = asyncio.create_task(Conf.async_test_1())
-#         task_2 = asyncio.create_task(Conf.async_test_2())
-#         task_3 = asyncio.create_task(Conf.async_test_3())
-#         await task_1
-#         await task_2
-#         await task_3
-#         print('Check3: ' + Conf.auto_flag)
-#         return redirect('http://0.0.0.0:5000')
 
 @web_app.route("/take-photo-now")
 def take_photo_manually():

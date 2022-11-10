@@ -4,9 +4,6 @@ import datetime
 from picamera import PiCamera
 import os
 import send_gmail as Gmail
-# import asyncio
-
-#GPIO.cleanup()
 
 PIR_PIN = 4
 LED_PIN = 17
@@ -53,12 +50,12 @@ def auto_switch(on_off_flag):
     return "Please set \"on\" or \"off\""
 
 def take_photo_automatically():
-    global auto_flag
     global last_pir_state
     global movement_timer
     global last_time_photo_taken
     global pir_state
-    while auto_flag == "on":
+    print("Auto job is now running")
+    while True:
         time.sleep(0.01)
         pir_state = GPIO.input(PIR_PIN)
         if pir_state == GPIO.HIGH:
@@ -77,33 +74,6 @@ def take_photo_automatically():
                     print("Photo taken and email sent out")
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state
-        if auto_flag == "off":
-            break
-    print("turned off")
-#    GPIO.cleanup()
-
-# async def async_take_photo_automatically():
-#     print("start async_take_photo_automatically")
-#     print("after 5 sec")
-#     await asyncio.sleep(60)
-# 
-#     take_photo_automatically()
-#     print("end async_take_photo_automatically")
-# 
-# async def async_test_1():
-#     print("start async_test_1")
-#     await asyncio.sleep(1)
-#     print("end async_test_1")
-# 
-# async def async_test_2():
-#     print("start async_test_2")
-#     await asyncio.sleep(2)
-#     print("end async_test_2")
-#     
-# async def async_test_3():
-#     print("start async_test_3")
-#     await asyncio.sleep(3)
-#     print("end async_test_3")
                              
 # setup a camera
 camera = PiCamera()

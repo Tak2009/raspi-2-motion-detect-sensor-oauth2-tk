@@ -1,9 +1,12 @@
-import asyncio
+import datetime
 
-async def main():
-    print('Hello ...')
-    await asyncio.sleep(1)
-    print('... World!')
+date = ""
+print(type(date))
 
-# Python 3.7+
-asyncio.run(main())
+date = datetime.datetime.now()
+print (date.minute)
+print (date.minute + 1)
+print(type(date))
+
+
+

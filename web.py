@@ -2,15 +2,20 @@ from flask import Flask, render_template, redirect
 import os
 import config as Conf
 import datetime
-from time import sleep
-from multiprocessing import Process
+import time
+from threading import Thread
+# https://superfastpython.com/stop-a-thread-in-python/#Stop_Custom_Function_in_New_Thread
+# https://blog.miguelgrinberg.com/post/how-to-kill-a-python-thread
+# https://docs.python.org/3/library/threading.html#event-objects
+from threading import Event
 
 FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
 
-# initialize a process for while loop
-process = ""
+# initialize a thread for while loop
+thread = ""
+event = Event()
 
 web_app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
 
@@ -45,36 +50,36 @@ def time_stamp ():
 
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):
-    global process
-    print(type(process))
+    global thread
+    global event
+    # Reset the internal flag to false. This is necessary to "reset" the event after set() was called previously. 
+    event.clear()
+    print(type(thread))
     Conf.auto_switch(on_off_flag)
     if on_off_flag == "on":
-        if isinstance(process, str):
+        if isinstance(thread, str):
             print('CheckOn1: ' + on_off_flag)
-            print('CheckOn2: ' + str(type(process)))
-#             process = Process(target=Conf.test)
-            process = Process(target=Conf.take_photo_automatically)
+            print('CheckOn2: ' + str(type(thread)))
+            thread = Thread(target=Conf.take_photo_automatically, args=(event,))
             date = datetime.datetime.now()
-            process.start()
-            print('process set up and a job' + str(date.hour) + '-' + str(date.minute) )
-            print('CheckOn3: ')
-            print('CheckOn4: ' + str(type(process)))
+            thread.start()
+            print('A thread started for the ahto while loop mode: ' + str(date.hour) + '-' + str(date.minute) )
+            print('CheckOn3: ' + str(type(thread)))
         else:
-            print('process exists and \'auto\' job is running in the backgroundand: the auto-mode is already on')
+            print('The thread for the auto while loop mode exists; the auto-mode has been on')
     if on_off_flag == "off":
-        if not isinstance(process, str):
+        if not isinstance(thread, str):
             print('CheckOff1: ' + on_off_flag)
-            print('CheckOff2: ' + str(type(process)))
-            process.kill()
-            print('process shut down')
-            print('Auto job is now off')
-            process = ""
-            print('CheckOff3: ' + str(type(process)))
+            print('CheckOff2: ' + str(type(thread)))
+            event.set()
+            print('Event thrown to the thread for the auto while loop mode to force the thread to stop')
+            print('Auto mode turned off now')
+            thread = ""
+            print('CheckOff3: ' + str(type(thread)))
         else:
-            print('No process exists and the auto-mode is already off')
-            print('CheckOff4: '+ str(type(process)))
-    print('Check5.1: all ifs done')
-    print('Check5.2: ' + str(type(Conf.camera)))
+            print('No thread for the auto while loop mode exists; the auto-mode has been already off')
+            print('CheckOff4: '+ str(type(thread)))
+    print('Before redirect')
     return redirect('http://0.0.0.0:5000')
 
 @web_app.route("/take-photo-now")

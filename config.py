@@ -49,12 +49,13 @@ def auto_switch(on_off_flag):
             return "Auto on already"
     return "Please set \"on\" or \"off\""
 
-def take_photo_automatically():
+def take_photo_automatically(event):
     global last_pir_state
     global movement_timer
     global last_time_photo_taken
     global pir_state
-    print("Auto job is now running")
+    print("Auto job will be running in 2 sec")
+    time.sleep(2)
     while True:
         time.sleep(0.01)
         pir_state = GPIO.input(PIR_PIN)
@@ -68,13 +69,15 @@ def take_photo_automatically():
             if time.time() - movement_timer > MOVE_DETECT_TRESHOLD:
                 if time.time() - last_time_photo_taken > MIN_DURATION_BETWEEN_2_PHOTOS:
                     print("Take a photo and send it by email")
-                    print('CheckOn5: ' + str(type(camera)))
                     photo_file_name = take_photo(camera)
                     update_photo_log_file(photo_file_name)
                     Gmail.gmailSender(photo_file_name)
                     print("Photo taken and email sent out")
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state
+        if event.is_set():
+            break
+    print('Exited from the auto while loop function')
 
 def test():
     print('testing the scheduler. this will terminate 15 sec later!: ' + str(datetime.datetime.now().hour) + '-' + str(datetime.datetime.now().minute))

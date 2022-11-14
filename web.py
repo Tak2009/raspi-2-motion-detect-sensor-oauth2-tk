@@ -1,21 +1,22 @@
 from flask import Flask, render_template, redirect
 import os
 import config as Conf
-# https://apscheduler.readthedocs.io/en/latest/
-# https://www.pytry3g.com/entry/apscheduler#%E3%82%B5%E3%83%B3%E3%83%97%E3%83%AB%EF%BC%91%EF%BC%93%EF%BC%91%EF%BC%99%E6%99%82%EF%BC%94%EF%BC%90%E5%88%86%E3%81%AB%E6%8C%87%E5%AE%9A%E3%81%97%E3%81%9F%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0%E3%81%AE%E8%87%AA%E5%8B%95%E5%AE%9F%E8%A1%8C
-# https://apscheduler.readthedocs.io/en/3.x/modules/triggers/date.html
-from apscheduler.schedulers.background import BackgroundScheduler
+
 import datetime
+from time import sleep
+from threading import Thread
 
 FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
 
-# initialize a sheduler
-sched = ""
+# initialize a thread for while loop
+thread = ""
 
 def test():
-    print('testing the scheduler. this was set 1 min ago!: ' + str(datetime.datetime.now().hour) + '-' + str(datetime.datetime.now().minute))
+    print('testing the scheduler. this will terminate 15 sec later!: ' + str(datetime.datetime.now().hour) + '-' + str(datetime.datetime.now().minute))
+    sleep(15)
+    print('test finished')
 
 web_app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
 
@@ -50,36 +51,34 @@ def time_stamp ():
 
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):
-    global sched
-    global executors
-    print(type(sched))
+    global thread
+    print(type(thread))
     Conf.auto_switch(on_off_flag)
     if on_off_flag == "on":
-        if isinstance(sched, str):
+        if isinstance(thread, str):
             print('CheckOn1: ' + on_off_flag)
-            print('CheckOn2: ' + str(type(sched)))
-            sched = BackgroundScheduler()
+            print('CheckOn2: ' + str(type(thread)))
+            thread = Thread(target=test)
             date = datetime.datetime.now()
-            sched.add_job(Conf.take_photo_automatically, 'date', run_date=datetime.datetime(date.year, date.month, date.day, date.hour, date.minute + 1, date.second), id='auto')
             sched.start()
-            print('BackgroundScheduler set up and a job has been scheduled. The job, \'auto\' will start running in 1 min: ' + str(date.hour) + '-' + str(date.minute) )
-            print('CheckOn3: '+ str(sched.get_jobs()))
-            print('CheckOn4: ' + str(type(sched)))
+            print('Thread set up and a job' + str(date.hour) + '-' + str(date.minute) )
+            print('CheckOn3: ')
+            print('CheckOn4: ' + str(type(thread)))
         else:
             print('BackgroundScheduler exists and \'auto\' job is running in the backgroundand: the auto-mode is already on')
     if on_off_flag == "off":
-        if not isinstance(sched, str):
+        if not isinstance(thread, str):
             print('CheckOff1: ' + on_off_flag)
-            print('CheckOff2: ' + str(type(sched)))
+            print('CheckOff2: ' + str(type(thread)))
             sched.shutdown(wait=False)
-            print('BackgroundScheduler shut down')
+            print('Thread shut down')
             print('Auto job is now off')
-            sched = ""
-            executor = ""
+            thread = ""
             print('CheckOff3: ' + str(type(sched)))
         else:
             print('No BackgroundScheduler exists and the auto-mode is already off')
             print('CheckOff4: '+ str(type(sched)))
+    print('Check5: all ifs done')  
     return redirect('http://0.0.0.0:5000')
 
 @web_app.route("/take-photo-now")

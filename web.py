@@ -11,7 +11,7 @@ FOLDER_PATH = "/home/pi/Python/Project_2/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
 
-# instanciate a sheduler
+# initialize a sheduler
 sched = ""
 
 def test():
@@ -51,6 +51,7 @@ def time_stamp ():
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):
     global sched
+    global executors
     print(type(sched))
     Conf.auto_switch(on_off_flag)
     if on_off_flag == "on":
@@ -74,6 +75,7 @@ def auto_on_off(on_off_flag):
             print('BackgroundScheduler shut down')
             print('Auto job is now off')
             sched = ""
+            executor = ""
             print('CheckOff3: ' + str(type(sched)))
         else:
             print('No BackgroundScheduler exists and the auto-mode is already off')

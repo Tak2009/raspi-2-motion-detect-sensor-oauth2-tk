@@ -68,13 +68,19 @@ def take_photo_automatically():
             if time.time() - movement_timer > MOVE_DETECT_TRESHOLD:
                 if time.time() - last_time_photo_taken > MIN_DURATION_BETWEEN_2_PHOTOS:
                     print("Take a photo and send it by email")
+                    print('CheckOn5: ' + str(type(camera)))
                     photo_file_name = take_photo(camera)
                     update_photo_log_file(photo_file_name)
                     Gmail.gmailSender(photo_file_name)
                     print("Photo taken and email sent out")
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state
-                             
+
+def test():
+    print('testing the scheduler. this will terminate 15 sec later!: ' + str(datetime.datetime.now().hour) + '-' + str(datetime.datetime.now().minute))
+    time.sleep(10)
+    print('test finished')
+
 # setup a camera
 camera = PiCamera()
 camera.resolution = (720, 480)

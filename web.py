@@ -36,12 +36,17 @@ def check_movement():
                 last_photo_file_name = line
         global cumulative_photo_counter
         difference_since_last_time = line_counter -  cumulative_photo_counter
-        message = str(difference_since_last_time) + " photo(s) were taken since the last check. <br/><br/>"
+        if difference_since_last_time == 1:
+            message = str(difference_since_last_time) + " photo was taken since the last check. <br/><br/>"
+        else:
+            message = str(difference_since_last_time) + " photos were taken since the last check. <br/><br/>"
         message += "Last photo: " + last_photo_file_name + "<br/>"
-        message += "<img src=\"" + last_photo_file_name + "\">"
+        message += "<img src=\"" + last_photo_file_name + "\"><br/>"
+        
         cumulative_photo_counter = line_counter 
     else:
-        message = "Nothing new"
+        message = "Nothing new<br/>"
+    message += "<a href=\"http://0.0.0.0:5000\">http://0.0.0.0:5000</a>"
     return message
 
 @web_app.route("/check-time-stamp")

@@ -42,7 +42,6 @@ def check_movement():
             message = str(difference_since_last_time) + " photos were taken since the last check. <br/><br/>"
         message += "Last photo: " + last_photo_file_name + "<br/>"
         message += "<img src=\"" + last_photo_file_name + "\"><br/>"
-        
         cumulative_photo_counter = line_counter 
     else:
         message = "Nothing new<br/>"

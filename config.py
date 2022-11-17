@@ -5,9 +5,29 @@ from picamera import PiCamera
 import os
 import send_gmail as Gmail
 
-PIR_PIN = 4
-LED_PIN = 17
 LOG_FILE_NAME = "/home/pi/Python/Project_2/static/photo/photo_logs.txt"
+
+pir_pin = 4
+led_pin = 17
+move_detect_threshold = 3.0
+pir_state = ""
+last_pir_state = ""
+movement_timer = time.time()
+min_duration_bw_2_photos = 10.0
+last_time_photo_taken = 0
+auto_flag = "off"
+
+def set_gpio():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pir_pin, GPIO.IN)
+    GPIO.setup(led_pin, GPIO.OUT)
+    GPIO.output(led_pin, GPIO.LOW)
+    print("GPIOs set-up")
+    
+def clean_gpio():
+    print('Mode Check Before Cleanup: ' + str(type(GPIO.getmode())))
+    GPIO.cleanup()
+    print('Mode Check After Cleanup: ' + str(GPIO.getmode()))
 
 def take_photo(camera):
     file_name = "/home/pi/Python/Project_2/static/photo/img_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".jpg"
@@ -18,20 +38,6 @@ def update_photo_log_file(photo_file_name):
     with open(LOG_FILE_NAME, "a") as f:
         f.write(photo_file_name)
         f.write("\n")
-
-def take_photo_now():
-    global last_pir_state
-    global last_time_photo_taken
-    global pir_state
-    pir_state = GPIO.input(PIR_PIN)
-    print("Take a photo now")
-    photo_file_name = take_photo(camera)
-    update_photo_log_file(photo_file_name)
-    print("Photo taken. Check http://0.0.0.0:5000/check-movement")
-    last_time_photo_taken = time.time()
-    last_pir_state = pir_state
-    message = "http://0.0.0.0:5000/check-movement"
-    return message
         
 def auto_switch(on_off_flag):
     global auto_flag
@@ -49,25 +55,50 @@ def auto_switch(on_off_flag):
             return "Auto on already"
     return "Please set \"on\" or \"off\""
 
+def take_photo_now():
+    if not isinstance(GPIO.getmode(), int):
+        set_gpio()
+    global last_pir_state
+    global last_time_photo_taken
+    global pir_state
+    pir_state = GPIO.input(pir_pin)
+    print("Take a photo now")
+    photo_file_name = take_photo(camera)
+    update_photo_log_file(photo_file_name)
+    print("Photo taken. Check http://0.0.0.0:5000/check-movement")
+    last_time_photo_taken = time.time()
+    last_pir_state = pir_state
+    clean_gpio()
+    message = "http://0.0.0.0:5000/check-movement"
+    return message
+
 def take_photo_automatically(event):
+    # check if GPIO.setmode(GPIO.BCM) = 11
+    if not isinstance(GPIO.getmode(), int):
+        set_gpio()
     global last_pir_state
     global movement_timer
     global last_time_photo_taken
     global pir_state
+    global pir_pin
+    global led_pin
+    global move_detect_threshold
+    global min_duration_bw_2_photos
+    last_pir_state = GPIO.input(pir_pin)
     print("Auto job will be running in 2 sec")
     time.sleep(2)
     while True:
         time.sleep(0.01)
-        pir_state = GPIO.input(PIR_PIN)
+        pir_state = GPIO.input(pir_pin)
         if pir_state == GPIO.HIGH:
-            GPIO.output(LED_PIN, GPIO.HIGH)
+            GPIO.output(led_pin, GPIO.HIGH)
         else:
-            GPIO.output(LED_PIN, GPIO.LOW)
+            GPIO.output(led_pin, GPIO.LOW)
         if last_pir_state == GPIO.LOW and pir_state == GPIO.HIGH:
             movement_timer = time.time()
         if last_pir_state == GPIO.HIGH and pir_state == GPIO.HIGH:
-            if time.time() - movement_timer > MOVE_DETECT_TRESHOLD:
-                if time.time() - last_time_photo_taken > MIN_DURATION_BETWEEN_2_PHOTOS:
+            if time.time() - movement_timer > move_detect_threshold:
+                if time.time() - last_time_photo_taken > min_duration_bw_2_photos:
                     print("Take a photo and send it by email")
                     photo_file_name = take_photo(camera)
                     update_photo_log_file(photo_file_name)
@@ -76,13 +107,9 @@ def take_photo_automatically(event):
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state
         if event.is_set():
+            clean_gpio()
             break
     print('Exited from the auto while loop function')
-
-def test():
-    print('testing the scheduler. this will terminate 15 sec later!: ' + str(datetime.datetime.now().hour) + '-' + str(datetime.datetime.now().minute))
-    time.sleep(10)
-    print('test finished')
 
 # setup a camera
 camera = PiCamera()
@@ -98,20 +125,7 @@ if os.path.exists(LOG_FILE_NAME):
     print("Log file removed")
     
 # setup GPIOs for sensor and led
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIR_PIN, GPIO.IN)
-GPIO.setup(LED_PIN, GPIO.OUT)
-GPIO.output(LED_PIN, GPIO.LOW)
-print("GPIOs set-up")
-
-MOVE_DETECT_TRESHOLD = 3.0
-pir_state = GPIO.input(PIR_PIN)
-last_pir_state = GPIO.input(PIR_PIN)
-movement_timer = time.time()
-MIN_DURATION_BETWEEN_2_PHOTOS = 10.0
-last_time_photo_taken = 0
-
-auto_flag = "off"
+set_gpio()
 
 print("Everything has been setup")
 

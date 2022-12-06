@@ -9,7 +9,7 @@ from threading import Thread
 # https://docs.python.org/3/library/threading.html#event-objects
 from threading import Event
 
-FOLDER_PATH = "/home/pi/Python/Project_2/static"
+FOLDER_PATH = "/home/pi/Python/raspi-2-motion-detect-sensor-oauth2-tk/static"
 LOG_FILE_NAME = FOLDER_PATH + "/photo/photo_logs.txt"
 cumulative_photo_counter = 0
 
@@ -47,10 +47,6 @@ def check_movement():
         message = "Nothing new<br/>"
     message += "<a href=\"http://0.0.0.0:5000\">http://0.0.0.0:5000</a>"
     return message
-
-@web_app.route("/check-time-stamp")
-def time_stamp ():
-    return render_template("check-time-stamp.html")
 
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):

@@ -8,7 +8,7 @@
 		<link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:wght@300&display=swap" rel="stylesheet">
 	</head>
 	<body>
-		<h1>Hello</h1>
+		<h1>Index</h1>
 		<h2>At the moment, auto-photo mode is: {{mode | upper}}</h2>
 		<br/>
 		<h3>To turn on auto-mode -> Go to <a href="http://0.0.0.0:5000/auto-mode/on">/auto-mode/on</a></h3>
@@ -16,9 +16,10 @@
 		<p>When auto-mode is on, we can NOT take photos manually.</p>
 		<h3>To turn off auto-mode -> Go to <a href="http://0.0.0.0:5000/auto-mode/off">/auto-mode/off</a></h3>
 		<p>When auto-mode is off, we can take photos manually. To do so, go to <a href="http://0.0.0.0:5000/take-photo-now">http://0.0.0.0:5000/take-photo-now</a>.</p>
-		<h3>To check the log and the last photo taken -> visit <a href="http://0.0.0.0:5000/check-movement">/check-movement</a></h3>
+		<h3>To check the log and the last photo taken (boring version)-> Go to <a href="http://0.0.0.0:5000/check-movement">/check-movement</a></h3>
+		<h3>To check the log and the last photo taken (amusing version) -> Go to <a href="http://0.0.0.0:5000/check-movement-2">/check-movement-2</a></h3>
 		<img id="media" src="https://media.giphy.com/media/H5POhvdgk9kcYyTToA/giphy.gif" alt="GIF" width="30%" height="30%">
-		<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
 	</body>
 		
 </html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/normalize.css') }}"/>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
+	    <link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:wght@300&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<h1>Check Movement</h1>
+		<img id="media" src="" alt="GIF" width="auto" height="300vw">
+		</div>
+		<br/>
+		{% if number == 0 %}
+			<h3>No movement since last check. No mice so far!</h3>
+		{% elif number == 1 %}
+			<h3>.... There is {{number}} photo....</h3>
+			<p>Last Photo: {{file_name}}</p>
+			<img src='{{file_name}}'></img>
+		{% else %}	
+			<h3>{{number}} photos have been taken!!</h3>
+			<p>Last Photo: {{file_name}}</p>
+			<img src='{{file_name}}'></img>
+		{% endif %}	
+
+		<p>Go back to <a href="http://0.0.0.0:5000/"> /index</a></p>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/check-movement.js') }}"></script>
+		<script type="text/javascript">
+			console.log('start')
+			changeMedia(setMedia({{ number|tojson }}))
+			console.log('end')
+		</script>
+	</body>
+		
+</html>

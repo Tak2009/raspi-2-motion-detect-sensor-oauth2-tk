@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect
+from jinja2 import Template
 import os
 import config as Conf
 import datetime
@@ -47,6 +48,25 @@ def check_movement():
         message = "Nothing new<br/>"
     message += "<a href=\"http://0.0.0.0:5000\">http://0.0.0.0:5000</a>"
     return message
+
+@web_app.route("/check-movement-2")
+def check_movement_2():
+    message = ""
+    line_counter = 0
+    last_photo_file_name = 0
+    if os.path.exists(LOG_FILE_NAME):
+        with open(LOG_FILE_NAME,"r") as f:
+            for line in f:
+                line_counter += 1
+                last_photo_file_name = line
+        global cumulative_photo_counter
+        difference_since_last_time = line_counter -  cumulative_photo_counter
+        print(str(difference_since_last_time))
+        cumulative_photo_counter = line_counter
+        print(str(difference_since_last_time))
+        return render_template("check-movement.html", number=difference_since_last_time, file_name=last_photo_file_name)
+    else:
+        return render_template("check-movement.html", number=0)
 
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):

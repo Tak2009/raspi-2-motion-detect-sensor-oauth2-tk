@@ -70,7 +70,7 @@ def take_photo_now():
     last_time_photo_taken = time.time()
     last_pir_state = pir_state
     clean_gpio()
-    message = "http://0.0.0.0:5000/check-movement"
+    message = ["http://0.0.0.0:5000/check-movement", "http://0.0.0.0:5000/check-movement-2"]
     return message
 
 def take_photo_automatically(event):

@@ -1,4 +1,9 @@
-* {
+*{
     color: black;
     font-family: 'Roboto', sans-serif;
+}
+
+.box1{
+  position: relative;
+  left: 100px;
 }

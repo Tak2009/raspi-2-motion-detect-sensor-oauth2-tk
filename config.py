@@ -4,6 +4,7 @@ import datetime
 from picamera import PiCamera
 import os
 import send_gmail as Gmail
+import network as n
 
 PROJECT_FOLDER = "/home/pi/Python/raspi-2-motion-detect-sensor-oauth2-tk"
 LOG_FILE_NAME = PROJECT_FOLDER + '/static/photo/photo_logs.txt'
@@ -66,11 +67,12 @@ def take_photo_now():
     print("Take a photo now")
     photo_file_name = take_photo(camera)
     update_photo_log_file(photo_file_name)
-    print("Photo taken. Check http://0.0.0.0:5000/check-movement")
+    print("Photo taken")
     last_time_photo_taken = time.time()
     last_pir_state = pir_state
     clean_gpio()
-    message = ["http://0.0.0.0:5000/check-movement", "http://0.0.0.0:5000/check-movement-2"]
+    message = [f'http://{n.HOST}:{n.PORT}/check-movement', f'http://{n.HOST}:{n.PORT}/check-movement-2']
+    print(str(message))
     return message
 
 def take_photo_automatically(event):

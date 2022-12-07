@@ -1,7 +1,8 @@
 from flask import Flask, render_template, redirect
 from jinja2 import Template
 import os
-import config as Conf
+import config as c
+import network as n
 import datetime
 import time
 from threading import Thread
@@ -18,12 +19,15 @@ cumulative_photo_counter = 0
 thread = ""
 event = Event()
 
+# flask-divice
 web_app = Flask(__name__, static_url_path=FOLDER_PATH, static_folder=FOLDER_PATH)
+
+host_port = f'{n.HOST}:{n.PORT}'
 
 @web_app.route("/")
 def index ():
-    mode = Conf.auto_flag
-    return render_template("index.html", mode=mode)
+    mode = c.auto_flag
+    return render_template("index.html", mode=mode, host_port=host_port)
     
 @web_app.route("/check-movement")
 def check_movement():
@@ -46,7 +50,7 @@ def check_movement():
         cumulative_photo_counter = line_counter 
     else:
         message = "Nothing new<br/>"
-    message += "<a href=\"http://0.0.0.0:5000\">http://0.0.0.0:5000</a>"
+    message += f'<p>Go back to <a href=\"http://{n.HOST}:{n.PORT}\">/index</a></p>'
     return message
 
 @web_app.route("/check-movement-2")
@@ -64,9 +68,9 @@ def check_movement_2():
         print(str(difference_since_last_time))
         cumulative_photo_counter = line_counter
         print(str(difference_since_last_time))
-        return render_template("check-movement.html", number=difference_since_last_time, file_name=last_photo_file_name)
+        return render_template("check-movement.html", number=difference_since_last_time, file_name=last_photo_file_name, host_port=host_port)
     else:
-        return render_template("check-movement.html", number=0)
+        return render_template("check-movement.html", number=0, host_port=host_port)
 
 @web_app.route("/auto-mode/<on_off_flag>")
 def auto_on_off(on_off_flag):
@@ -75,12 +79,12 @@ def auto_on_off(on_off_flag):
     # Reset the internal flag to false. This is necessary to "reset" the event after set() was called previously. 
     event.clear()
     print(type(thread))
-    Conf.auto_switch(on_off_flag)
+    c.auto_switch(on_off_flag)
     if on_off_flag == "on":
         if isinstance(thread, str):
             print('CheckOn1: ' + on_off_flag)
             print('CheckOn2: ' + str(type(thread)))
-            thread = Thread(target=Conf.take_photo_automatically, args=(event,))
+            thread = Thread(target=c.take_photo_automatically, args=(event,))
             date = datetime.datetime.now()
             thread.start()
             print('A thread started for the ahto while loop mode: ' + str(date.hour) + '-' + str(date.minute) )
@@ -100,13 +104,13 @@ def auto_on_off(on_off_flag):
             print('No thread for the auto while loop mode exists; the auto-mode has been already off')
             print('CheckOff4: '+ str(type(thread)))
     print('Before redirect')
-    return redirect('http://0.0.0.0:5000')
+    return redirect(f'http://{n.HOST}:{n.PORT}')
 
 @web_app.route("/take-photo-now")
 def take_photo_manually():
-    message = Conf.take_photo_now()
-    return render_template("take-photo-now.html", message=message)
+    message = c.take_photo_now()
+    return render_template("take-photo-now.html", message=message, host_port=host_port)
 
-web_app.run(host="0.0.0.0")
+web_app.run(host=n.HOST, port=n.PORT)
 
 

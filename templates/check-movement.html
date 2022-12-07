@@ -24,7 +24,7 @@
 			<img src='{{file_name}}'></img>
 		{% endif %}	
 
-		<p>Go back to <a href="http://0.0.0.0:5000/"> /index</a></p>
+		<p>Go back to <a href="http://{{host_port}}/"> /index</a></p>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/check-movement.js') }}"></script>
 		<script type="text/javascript">
 			console.log('start')

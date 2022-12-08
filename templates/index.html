@@ -1,38 +1,92 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="UTF-8">	
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">	
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/normalize.css') }}"/>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
+
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto:wght@300&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"/>
 	</head>
 	<body>
-		<h1>Index</h1>
-		<h2>At the moment, auto-photo mode is: {{mode | upper}}</h2>
+		<h1 class="h1 ml-3">Index</h1>
+		<h2 class="h2 ml-3">At the moment, auto-photo mode is: {{mode | upper}}</h2>
 		<br/>
-		<h3>How to use the camera</h3>
-			<div class="box1">
-				<h4>1. Auto mode</h4>
-				<div class="box1">
-					<p>To turn on auto-mode -> Go to <a href="http://{{host_port}}/auto-mode/on">/auto-mode/on</a></p>
-					<p>To turn off auto-mode -> Go to <a href="http://{{host_port}}/auto-mode/off">/auto-mode/off</a></p>
-					<p>Once movement detected for 3 consecutive seconds, photo is taken and sent via Gmail.</p>
-				</div>
-				<h4>2. Manual mode</h4>
-				<div class="box1">
-					<p>When auto-mode is off, we can take photos manually. To do so, go to <a href="http://{{host_port}}/take-photo-now">http://{{host_port}}/take-photo-now</a>.</h5>		
-					<p>When auto-mode is on, we can NOT take photos manually.</p>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-8">
+					<h3 class="h3 ml-3">How to use the camera</h3>
+					<div class="table-responsive-sm">
+						<table class="table ml-3">
+							<tbody>
+								<tr>
+									<td></td>
+									<td><h4>1. Auto mode</h4></td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+									<td><p>To turn on auto-mode -> Go to <a href="http://{{host_port}}/auto-mode/on">/auto-mode/on</a></p></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+									<td><p>To turn off auto-mode -> Go to <a href="http://{{host_port}}/auto-mode/off">/auto-mode/off</a></p></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+									<td><p>Once movement detected for 3 consecutive seconds, photo is taken and sent via Gmail.</p></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><h4>2. Manual mode</h4></td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+									<td><p>When auto-mode is off, we can take photos manually. To do so, go to <a href="http://{{host_port}}/take-photo-now">http://{{host_port}}/take-photo-now</a>.</p></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td></td>
+									<td><p>When auto-mode is on, we can NOT take photos manually.Once movement detected for 3 consecutive seconds, photo is taken and sent via Gmail.</p></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<h3 class="h3 ml-3">How to check the log or the last photo</h3>
+					<div class="table-responsive-sm">
+						<table class="table ml-3">
+							<tbody>
+								<tr>
+									<td></td>
+									<td><h4>1. To check the log and the last photo taken (boring version)-> Go to <a href="http://{{host_port}}/check-movement">/check-movement</a></h4></td>
+									<td></td>
+									<td></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td><h4>2. To check the log and the last photo taken (amusing version) -> Go to <a href="http://{{host_port}}/check-movement-2">/check-movement-2</a></h4></td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>	
+				</div>				
+				<br/>
+				<div class="col-md-4">
+					<img id="media" class="ml-3 "img-responsive" src="https://media.giphy.com/media/pPOhvdgk9kcYyTToA/giphy.gif" alt="GIF">
 				</div>
 			</div>
-		<h3>How to check the log or the last photo</h3>
-			<div class="box1">
-				<h4>1. To check the log and the last photo taken (boring version)-> Go to <a href="http://{{host_port}}/check-movement">/check-movement</a></h4>
-				<h4>2. To check the log and the last photo taken (amusing version) -> Go to <a href="http://{{host_port}}/check-movement-2">/check-movement-2</a></h4>
-			</div>
-		<br/>
-		<img id="media" src="https://media.giphy.com/media/pPOhvdgk9kcYyTToA/giphy.gif" alt="GIF" width="30%" height="30%">
+		</div>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
 	</body>
-		
 </html>

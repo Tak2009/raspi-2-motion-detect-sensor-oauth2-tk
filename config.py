@@ -3,8 +3,9 @@ import time
 import datetime
 from picamera import PiCamera
 import os
-import send_gmail as Gmail
+import send_gmail as gmail
 import network as n
+import apis as api
 
 PROJECT_FOLDER = "/home/pi/Python/raspi-2-motion-detect-sensor-oauth2-tk"
 LOG_FILE_NAME = PROJECT_FOLDER + '/static/photo/photo_logs.txt'
@@ -105,7 +106,8 @@ def take_photo_automatically(event):
                     print("Take a photo and send it by email")
                     photo_file_name = take_photo(camera)
                     update_photo_log_file(photo_file_name)
-                    Gmail.gmailSender(photo_file_name)
+                    gmail.gmailSender(photo_file_name)
+                    api.asyncio.run(api.main())
                     print("Photo taken and email sent out")
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state

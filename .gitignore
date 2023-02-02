@@ -136,3 +136,4 @@ settings.json
 static/photo/*.txt
 static/photo/*.jpg
 network.py
+credentials.py

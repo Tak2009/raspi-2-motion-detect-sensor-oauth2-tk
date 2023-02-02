@@ -16,7 +16,7 @@ move_detect_threshold = 3.0
 pir_state = ""
 last_pir_state = ""
 movement_timer = time.time()
-min_duration_bw_2_photos = 10.0
+min_duration_bw_2_photos = 15.0
 last_time_photo_taken = 0
 auto_flag = "off"
 

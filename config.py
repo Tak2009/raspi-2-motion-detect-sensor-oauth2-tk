@@ -68,7 +68,9 @@ def take_photo_now():
     print("Take a photo now")
     photo_file_name = take_photo(camera)
     update_photo_log_file(photo_file_name)
-    print("Photo taken")
+    print("Photo taken and email sent out")
+    url = api.asyncio.run(api.main())
+    gmail.gmailSender(photo_file_name, url)
     last_time_photo_taken = time.time()
     last_pir_state = pir_state
     clean_gpio()
@@ -106,8 +108,8 @@ def take_photo_automatically(event):
                     print("Take a photo and send it by email")
                     photo_file_name = take_photo(camera)
                     update_photo_log_file(photo_file_name)
-                    gmail.gmailSender(photo_file_name)
-                    api.asyncio.run(api.main())
+                    url = api.asyncio.run(api.main())
+                    gmail.gmailSender(photo_file_name, url)
                     print("Photo taken and email sent out")
                     last_time_photo_taken = time.time()
         last_pir_state = pir_state

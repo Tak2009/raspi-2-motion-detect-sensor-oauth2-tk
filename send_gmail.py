@@ -28,10 +28,11 @@ def attachFileToEmail(photo_file_name):
    message.attach(part)
 
 # ceate a message for email
-def createEmailMessage(sender, to, subject, message_text):
+def createEmailMessage(sender, to, subject, message_text, url):
    message['to'] = to
    message['from'] = sender
    message['subject'] = subject
+   message_text += url
    message.attach(MIMEText(message_text))
    encode_message = base64.urlsafe_b64encode(message.as_bytes())
    return {'raw': encode_message.decode()}
@@ -60,11 +61,11 @@ def getAccessToken(_scopes, _token, _credentialJson):
    _service = build('gmail', 'v1', credentials=creds)
    return _service
 
-def gmailSender(photo_file_name):
+def gmailSender(photo_file_name, url):
    json = getSettings("settings.json")
    service = getAccessToken(json["scopes"], json["gglToken"], json["gglJson"])
    message = attachFileToEmail(photo_file_name)
-   message = createEmailMessage(json["sender"], json["to"], json["subject"], json["message"])
+   message = createEmailMessage(json["sender"], json["to"], json["subject"], json["message"], url)
    sendMessage(service, 'me', message)
 # ===================================================
 #if __name__ == '__main__':

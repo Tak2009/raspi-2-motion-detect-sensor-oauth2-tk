@@ -29,6 +29,7 @@ async def main():
         async with session.post(pics_url, data=json.dumps(pic_payload), headers=pic_post_headers) as resp: ## don't forget to convert the payload into json
             pic = await resp.json()
             print(pic)
+            return 'https://tak2009.pythonanywhere.com/api/v1/pics/pics/' + str(pic['id']) + '/'
             
  
 # pic_post_headers={#'Content-Type': 'image/jpg',
